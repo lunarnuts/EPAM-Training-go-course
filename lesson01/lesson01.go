@@ -5,6 +5,5 @@ import (
 )
 
 func main() {
-	message := emoji.Sprint("Hello, world :relaxed:")
-	emoji.Println(message)
+	emoji.Println("Hello, world :relaxed:")
 }
