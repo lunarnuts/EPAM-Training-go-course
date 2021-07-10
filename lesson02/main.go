@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	fmt.Println("Fibonacci numbers is a form of sequence, such that each number is the sum of two preceeding ones.")
-	Printer(40)
-	fmt.Println()
-	Recursive(40)
+	defer Recursive(20)
+	defer fmt.Println()
+	defer Printer(20)
+	fmt.Println("Fibonacci numbers is a form of sequence, such that")
+	fmt.Println("each number is the sum of two preceeding ones.\n")
 }
 
