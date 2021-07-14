@@ -16,6 +16,8 @@ func main() {
 		9:  "hohohoh",
 		5:  "test",
 	}
+	test := []int64{}
+	fmt.Println(util.Reverse(test))
 	fmt.Println(util.FindAverage(arr))
 	fmt.Println(util.Max(sarr))
 	fmt.Println(util.Reverse(ar))

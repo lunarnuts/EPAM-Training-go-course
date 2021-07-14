@@ -7,8 +7,7 @@ import (
 
 func FindAverage(arr []int) float64 {
 	if len(arr) == 0 {
-		fmt.Println("empty array")
-		return 1
+		return 0
 	}
 	sum := 0.0
 	for _, elem := range arr {
@@ -19,7 +18,7 @@ func FindAverage(arr []int) float64 {
 
 func Max(sarr []string) string {
 	if len(sarr) == 0 {
-		return "empty array"
+		return ""
 	}
 	maxstr := 0
 	for ind, val := range sarr {
@@ -32,11 +31,6 @@ func Max(sarr []string) string {
 
 func Reverse(arr []int64) []int64 {
 	l := len(arr)
-	if l == 0 {
-		fmt.Println("empty array")
-		return 1
-
-	}
 	cp := make([]int64, l)
 	for ind, val := range arr {
 		cp[l-1-ind] = val
