@@ -9,70 +9,74 @@ type Rectangle struct {
 	width  float64
 }
 
-func (r Rectangle) Area() (float64, bool) {
+func (r Rectangle) Area() (float64, error) {
 	h, ok := r.GetHeight()
-	if !ok {
+	if ok != nil {
 		return -1, ok
 	}
 	w, ok := r.GetWidth()
-	if !ok {
+	if ok != nil {
 		return -1, ok
 	}
-	return h * w, true
+	return h * w, nil
 }
 
-func (r Rectangle) Perimeter() (float64, bool) {
+func (r Rectangle) Perimeter() (float64, error) {
 	h, ok := r.GetHeight()
-	if !ok {
+	if ok != nil {
 		return -1, ok
 	}
 	w, ok := r.GetWidth()
-	if !ok {
+	if ok != nil {
 		return -1, ok
 	}
-	return 2 * (h + w), true
+	return 2 * (h + w), nil
 }
 
 func (r Rectangle) String() string {
 	h, ok := r.GetHeight()
-	if !ok {
-		return fmt.Sprintf("height needs to be positive and non-zero, got: %.3f", r.height)
+	if ok != nil {
+		return ok.Error()
 	}
 	w, ok := r.GetWidth()
-	if !ok {
-		return fmt.Sprintf("width needs to be positive and non-zero, got: %.3f", r.width)
+	if ok != nil {
+		return ok.Error()
 	}
 	return fmt.Sprintf("\nRectangle with height %.2f and width %.2f", h, w)
 }
 
-func (r *Rectangle) SetHeight(h float64) bool {
+func (r *Rectangle) SetHeight(h float64) error {
+	if _, ok := r.GetHeight(); ok != nil {
+		return ok
+	}
 	if h <= 0 {
-		fmt.Printf("height needs to be positive and non-zero, got: %.3f\n", h)
-		return false
+		return fmt.Errorf("height needs to be positive and non-zero, got: %.3f", r.height)
 	}
 	r.height = h
-	return true
+	return nil
 }
 
-func (r *Rectangle) SetWidth(w float64) bool {
+func (r *Rectangle) SetWidth(w float64) error {
+	if _, ok := r.GetWidth(); ok != nil {
+		return ok
+	}
 	if w <= 0 {
-		fmt.Printf("width needs to be positive and non-zero, got: %.3f\n", w)
-		return false
+		return fmt.Errorf("width needs to be positive and non-zero, got: %.3f", r.width)
 	}
 	r.width = w
-	return true
+	return nil
 }
 
-func (r Rectangle) GetHeight() (float64, bool) {
+func (r Rectangle) GetHeight() (float64, error) {
 	if r.height <= 0 {
-		return -1, false
+		return -1, fmt.Errorf("height needs to be positive and non-zero, got: %.3f", r.height)
 	}
-	return r.height, true
+	return r.height, nil
 }
 
-func (r Rectangle) GetWidth() (float64, bool) {
+func (r Rectangle) GetWidth() (float64, error) {
 	if r.width <= 0 {
-		return -1, false
+		return -1, fmt.Errorf("width needs to be positive and non-zero, got: %.3f", r.width)
 	}
-	return r.width, true
+	return r.width, nil
 }

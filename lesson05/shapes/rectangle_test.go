@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -13,11 +14,11 @@ func TestRectangle_GetHeight(t *testing.T) {
 		name   string
 		fields fields
 		want   float64
-		want1  bool
+		want1  error
 	}{
-		{"positive height", fields{height: 1, width: 2}, 1, true},
-		{"zero height", fields{height: 0, width: 2}, -1, false},
-		{"negative height", fields{height: -1, width: 2}, -1, false},
+		{"positive height", fields{height: 1, width: 2}, 1, nil},
+		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
+		{"negative height", fields{height: -1, width: 2}, -1, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -29,7 +30,7 @@ func TestRectangle_GetHeight(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.GetHeight() got = %v, want %v", got, tt.want)
 			}
-			if got1 != tt.want1 {
+			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
 				t.Errorf("Rectangle.GetHeight() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
@@ -45,11 +46,11 @@ func TestRectangle_GetWidth(t *testing.T) {
 		name   string
 		fields fields
 		want   float64
-		want1  bool
+		want1  error
 	}{
-		{"positive width", fields{height: 1, width: 2}, 2, true},
-		{"zero width", fields{height: 0, width: 0}, -1, false},
-		{"negative width", fields{height: -1, width: -2}, -1, false},
+		{"positive width", fields{height: 1, width: 2}, 2, nil},
+		{"zero width", fields{height: 0, width: 0}, -1, errors.New("test")},
+		{"negative width", fields{height: -1, width: -2}, -1, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -61,7 +62,7 @@ func TestRectangle_GetWidth(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.GetWidth() got = %v, want %v", got, tt.want)
 			}
-			if got1 != tt.want1 {
+			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
 				t.Errorf("Rectangle.GetWidth() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
@@ -80,11 +81,11 @@ func TestRectangle_SetWidth(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   bool
+		want   error
 	}{
-		{"positive width", fields{height: 1, width: 2}, args{w: 1}, true},
-		{"zero width", fields{height: 0, width: 2}, args{w: 0}, false},
-		{"negative width", fields{height: -1, width: 2}, args{w: -2}, false},
+		{"positive width", fields{height: 1, width: 2}, args{w: 1}, nil},
+		{"zero width", fields{height: 0, width: 2}, args{w: 0}, errors.New("test")},
+		{"negative width", fields{height: -1, width: 2}, args{w: -2}, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -92,7 +93,7 @@ func TestRectangle_SetWidth(t *testing.T) {
 				height: tt.fields.height,
 				width:  tt.fields.width,
 			}
-			if got := r.SetWidth(tt.args.w); got != tt.want {
+			if got := r.SetWidth(tt.args.w); got == nil && tt.want != nil || got != nil && tt.want == nil {
 				t.Errorf("Rectangle.SetWidth() = %v, want %v", got, tt.want)
 			}
 		})
@@ -111,11 +112,11 @@ func TestRectangle_SetHeight(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   bool
+		want   error
 	}{
-		{"positive height", fields{height: 1, width: 2}, args{h: 1}, true},
-		{"zero height", fields{height: 0, width: 2}, args{h: 0}, false},
-		{"negative height", fields{height: -1, width: 2}, args{h: -2}, false},
+		{"positive height", fields{height: 1, width: 2}, args{h: 1}, nil},
+		{"zero height", fields{height: 0, width: 2}, args{h: 0}, errors.New("test")},
+		{"negative height", fields{height: -1, width: 2}, args{h: -2}, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -123,7 +124,7 @@ func TestRectangle_SetHeight(t *testing.T) {
 				height: tt.fields.height,
 				width:  tt.fields.width,
 			}
-			if got := r.SetHeight(tt.args.h); got != tt.want {
+			if got := r.SetHeight(tt.args.h); got == nil && tt.want != nil || got != nil && tt.want == nil {
 				t.Errorf("Rectangle.SetHeight() = %v, want %v", got, tt.want)
 			}
 		})
@@ -168,13 +169,13 @@ func TestRectangle_Perimeter(t *testing.T) {
 		name   string
 		fields fields
 		want   float64
-		want1  bool
+		want1  error
 	}{
-		{"positive height and width", fields{height: 1, width: 2}, 6, true},
-		{"zero height", fields{height: 0, width: 2}, -1, false},
-		{"negative height", fields{height: -1, width: 2}, -1, false},
-		{"zero width", fields{height: 1, width: 0}, -1, false},
-		{"negative width", fields{height: 1, width: -2}, -1, false},
+		{"positive height and width", fields{height: 1, width: 2}, 6, nil},
+		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
+		{"negative height", fields{height: -1, width: 2}, -1, errors.New("test")},
+		{"zero width", fields{height: 1, width: 0}, -1, errors.New("test")},
+		{"negative width", fields{height: 1, width: -2}, -1, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -186,7 +187,7 @@ func TestRectangle_Perimeter(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.Perimeter() got = %v, want %v", got, tt.want)
 			}
-			if got1 != tt.want1 {
+			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
 				t.Errorf("Rectangle.Perimeter() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
@@ -202,13 +203,13 @@ func TestRectangle_Area(t *testing.T) {
 		name   string
 		fields fields
 		want   float64
-		want1  bool
+		want1  error
 	}{
-		{"positive height and width", fields{height: 1, width: 2}, 2, true},
-		{"zero height", fields{height: 0, width: 2}, -1, false},
-		{"negative height", fields{height: -1, width: 2}, -1, false},
-		{"zero width", fields{height: 1, width: 0}, -1, false},
-		{"negative width", fields{height: 1, width: -2}, -1, false},
+		{"positive height and width", fields{height: 1, width: 2}, 2, nil},
+		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
+		{"negative height", fields{height: -1, width: 2}, -1, errors.New("test")},
+		{"zero width", fields{height: 1, width: 0}, -1, errors.New("test")},
+		{"negative width", fields{height: 1, width: -2}, -1, errors.New("test")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -220,7 +221,7 @@ func TestRectangle_Area(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.Area() got = %v, want %v", got, tt.want)
 			}
-			if got1 != tt.want1 {
+			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
 				t.Errorf("Rectangle.Area() got1 = %v, want %v", got1, tt.want1)
 			}
 		})

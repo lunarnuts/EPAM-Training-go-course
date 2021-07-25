@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/lunarnuts/go-course/tree/lesson05/shapes"
 )
 
 func DescribeShape(s shapes.Shape) {
 	a, ok := s.Area()
-	if !ok {
-		return
+	if ok != nil {
+		log.Fatal(ok)
 	}
 	p, ok := s.Perimeter()
-	if !ok {
-		return
+	if ok != nil {
+		log.Fatal(ok)
 	}
 	fmt.Println(s)
 	fmt.Printf("Area: %.2f\n", a)
