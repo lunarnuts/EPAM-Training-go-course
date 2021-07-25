@@ -9,7 +9,7 @@
     			"User-Agent": ["curl/7.67.0"]
  		}
 	}
-All data must be taken from request struct.
+	All data must be taken from request struct.
 ### Task 2:
 	TCP Server (S) listen for a connections on a port
 	TCP Client (C) connects to a TCP server on a port 
