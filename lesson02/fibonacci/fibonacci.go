@@ -1,11 +1,9 @@
 package fibonacci
-
 import (
 	"fmt"
 	"strings"
 )
-
-func Printer(n int) {
+func Printer(n int) int {
 	one := 0
 	two := 1
 	fmt.Print(one, " ", two, " ")
@@ -16,13 +14,9 @@ func Printer(n int) {
 		fmt.Print(fib, " ")
 	}
 	fmt.Println()
+	return 1
 }
-
 func Recursive(n int) {
-	if n < 0 {
-		fmt.Println("Number must be positive")
-		return
-	}
 	mp := make([]int, n+1)
 	for j := range mp {
 		mp[j] = -1

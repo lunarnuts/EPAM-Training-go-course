@@ -1,9 +1,8 @@
 package main
 
 import (
-   "fmt"
-
-   "github.com/lunarnuts/go-course/tree/lesson04/shapes"
+	"fmt"
+	"github.com/lunarnuts/go-course/tree/lesson04/shapes"
 )
 
 func DescribeShape(s shapes.Shape) {
@@ -13,6 +12,8 @@ func DescribeShape(s shapes.Shape) {
 }
 
 func main() {
+
+
    var c shapes.Circle
    c.SetRadius(8)
    var r shapes.Rectangle
