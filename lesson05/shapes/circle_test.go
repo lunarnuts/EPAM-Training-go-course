@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"testing"
@@ -40,10 +41,10 @@ func TestCircle_GetRadius(t *testing.T) {
 		radius float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive radius", fields{radius: 1}, 1, nil},
 		{"zero radius", fields{radius: 0}, -1, fmt.Errorf("radius needs to be positive and non-zero, got: %.3f", 0.0)},
@@ -58,8 +59,8 @@ func TestCircle_GetRadius(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.GetRadius() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Circle.GetRadius() gotErr = %v, want %v", got1, tt.want1)
+			if !errors.Is(got1, tt.wantErr) {
+				t.Errorf("Circle.GetRadius() gotErr = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
@@ -95,10 +96,10 @@ func TestCircle_Perimeter(t *testing.T) {
 		radius float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive radius", fields{radius: 1}, 2 * math.Pi, nil},
 		{"zero radius", fields{radius: 0}, -1, fmt.Errorf("radius needs to be positive and non-zero, got: %.3f", 0.0)},
@@ -113,8 +114,8 @@ func TestCircle_Perimeter(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Perimeter() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Circle.Perimeter() got1 = %v, want %v", got1, tt.want1)
+			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+				t.Errorf("Circle.Perimeter() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
@@ -125,10 +126,10 @@ func TestCircle_Area(t *testing.T) {
 		radius float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive radius", fields{radius: 1}, math.Pi, nil},
 		{"zero radius", fields{radius: 0}, -1, fmt.Errorf("radius needs to be positive and non-zero, got: %.3f", 0.0)},
@@ -143,8 +144,8 @@ func TestCircle_Area(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Area() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Circle.Area() got1 = %v, want %v", got1, tt.want1)
+			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+				t.Errorf("Circle.Area() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
