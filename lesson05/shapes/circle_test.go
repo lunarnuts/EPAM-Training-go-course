@@ -1,7 +1,6 @@
 package shapes
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"testing"
@@ -59,7 +58,7 @@ func TestCircle_GetRadius(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.GetRadius() got = %v, want %v", got, tt.want)
 			}
-			if !errors.Is(got1, tt.wantErr) {
+			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
 				t.Errorf("Circle.GetRadius() gotErr = %v, want %v", got1, tt.wantErr)
 			}
 		})
@@ -114,7 +113,7 @@ func TestCircle_Perimeter(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Perimeter() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
 				t.Errorf("Circle.Perimeter() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
@@ -144,7 +143,7 @@ func TestCircle_Area(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Area() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
 				t.Errorf("Circle.Area() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})

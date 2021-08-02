@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -11,10 +12,10 @@ func TestRectangle_GetHeight(t *testing.T) {
 		width  float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive height", fields{height: 1, width: 2}, 1, nil},
 		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
@@ -30,8 +31,8 @@ func TestRectangle_GetHeight(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.GetHeight() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Rectangle.GetHeight() got1 = %v, want %v", got1, tt.want1)
+			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+				t.Errorf("Rectangle.GetHeight() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
@@ -43,10 +44,10 @@ func TestRectangle_GetWidth(t *testing.T) {
 		width  float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive width", fields{height: 1, width: 2}, 2, nil},
 		{"zero width", fields{height: 0, width: 0}, -1, errors.New("test")},
@@ -62,8 +63,8 @@ func TestRectangle_GetWidth(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.GetWidth() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Rectangle.GetWidth() got1 = %v, want %v", got1, tt.want1)
+			if got1 == nil && tt.wantErr != nil || got1 != nil && tt.wantErr == nil {
+				t.Errorf("Rectangle.GetWidth() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
@@ -166,16 +167,16 @@ func TestRectangle_Perimeter(t *testing.T) {
 		width  float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive height and width", fields{height: 1, width: 2}, 6, nil},
-		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
-		{"negative height", fields{height: -1, width: 2}, -1, errors.New("test")},
-		{"zero width", fields{height: 1, width: 0}, -1, errors.New("test")},
-		{"negative width", fields{height: 1, width: -2}, -1, errors.New("test")},
+		{"zero height", fields{height: 0, width: 2}, -1, errors.New("height needs to be positive and non-zero, got: 0.000")},
+		{"negative height", fields{height: -1, width: 2}, -1, errors.New("height needs to be positive and non-zero, got: -1.000")},
+		{"zero width", fields{height: 1, width: 0}, -1, errors.New("width needs to be positive and non-zero, got: 0.000")},
+		{"negative width", fields{height: 1, width: -2}, -1, errors.New("width needs to be positive and non-zero, got: -2.000")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -187,8 +188,8 @@ func TestRectangle_Perimeter(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.Perimeter() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Rectangle.Perimeter() got1 = %v, want %v", got1, tt.want1)
+			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
+				t.Errorf("Rectangle.Perimeter() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
@@ -200,16 +201,16 @@ func TestRectangle_Area(t *testing.T) {
 		width  float64
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-		want1  error
+		name    string
+		fields  fields
+		want    float64
+		wantErr error
 	}{
 		{"positive height and width", fields{height: 1, width: 2}, 2, nil},
-		{"zero height", fields{height: 0, width: 2}, -1, errors.New("test")},
-		{"negative height", fields{height: -1, width: 2}, -1, errors.New("test")},
-		{"zero width", fields{height: 1, width: 0}, -1, errors.New("test")},
-		{"negative width", fields{height: 1, width: -2}, -1, errors.New("test")},
+		{"zero height", fields{height: 0, width: 2}, -1, errors.New("height needs to be positive and non-zero, got: 0.000")},
+		{"negative height", fields{height: -1, width: 2}, -1, errors.New("height needs to be positive and non-zero, got: -1.000")},
+		{"zero width", fields{height: 1, width: 0}, -1, errors.New("width needs to be positive and non-zero, got: 0.000")},
+		{"negative width", fields{height: 1, width: -2}, -1, errors.New("width needs to be positive and non-zero, got: -2.000")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -221,8 +222,8 @@ func TestRectangle_Area(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Rectangle.Area() got = %v, want %v", got, tt.want)
 			}
-			if got1 == nil && tt.want1 != nil || got1 != nil && tt.want1 == nil {
-				t.Errorf("Rectangle.Area() got1 = %v, want %v", got1, tt.want1)
+			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
+				t.Errorf("Rectangle.Area() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
 	}
