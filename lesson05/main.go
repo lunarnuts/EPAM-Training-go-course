@@ -29,7 +29,4 @@ func main() {
 	r.SetWidth(3)
 	DescribeShape(c)
 	DescribeShape(r)
-	var a shapes.Circle
-	a.SetRadius(2.5)
-	DescribeShape(a)
 }
