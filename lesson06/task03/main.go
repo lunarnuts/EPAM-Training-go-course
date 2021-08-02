@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"com.epamtraining/lesson06/task03/util"
+	"com.epam.training/go-course/lesson06/task03/util"
 )
 
 func main() {

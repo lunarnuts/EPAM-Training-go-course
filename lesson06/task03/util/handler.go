@@ -40,11 +40,9 @@ func errorHandler(w http.ResponseWriter, err myError) {
 	if e != nil {
 		log.Print(e)
 		w.WriteHeader(500)
-		templ.Execute(w, myError{
-			Code:    500,
-			Message: errors.New("Internal server error"),
-		})
+		fmt.Fprint(w, "<head><title>500</title></head><body><h1>500</h1><p>Internal Server Error</p></body")
+	} else {
+		w.WriteHeader(err.Code)
+		templ.Execute(w, err)
 	}
-	w.WriteHeader(err.Code)
-	templ.Execute(w, err)
 }
