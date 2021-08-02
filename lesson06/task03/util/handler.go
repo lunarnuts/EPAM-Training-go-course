@@ -38,7 +38,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func errorHandler(w http.ResponseWriter, err myError) {
 	templ, e := template.ParseFiles("util/error.html")
 	if e != nil {
-		log.Fatal(e)
+		log.Print(e)
 		w.WriteHeader(500)
 		templ.Execute(w, myError{
 			Code:    500,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"com.epam.training/lesson06/util"
+	"com.epam.training/lesson06/task01/util"
 )
 
 func main() {

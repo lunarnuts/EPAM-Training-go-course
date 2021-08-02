@@ -25,7 +25,7 @@ func main() {
 			log.Print(err)
 			continue
 		}
-		_, err = conn.Write([]byte(message + "\n"))
+		_, err = conn.Write([]byte(message))
 		if err != nil {
 			log.Print(err)
 			return

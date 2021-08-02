@@ -21,7 +21,7 @@ func main() {
 		conn, err := ln.Accept()
 		if err != nil {
 			log.Print(err)
-			return
+			break
 		}
 		go func(c net.Conn) {
 			defer c.Close()
@@ -36,7 +36,7 @@ func main() {
 					fmt.Println("Client closed")
 					break
 				}
-				num, err := strconv.Atoi(strings.Trim(message, "\n"))
+				num, err := strconv.Atoi(strings.TrimSpace(message))
 				if err != nil {
 					_, er := c.Write([]byte(strings.ToUpper(message) + "\n"))
 					if er != nil {
