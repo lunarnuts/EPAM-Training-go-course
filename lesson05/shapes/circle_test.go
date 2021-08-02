@@ -28,7 +28,11 @@ func TestCircle_SetRadius(t *testing.T) {
 			c := &Circle{
 				radius: tt.fields.radius,
 			}
-			if got := c.SetRadius(tt.args.r); got == nil && tt.want != nil || got != nil && tt.want == nil {
+			got := c.SetRadius(tt.args.r)
+			if got == nil && got != tt.want {
+				t.Errorf("Circle.SetRadius() = %v, want %v", got, tt.want)
+			}
+			if got != nil && got.Error() != tt.want.Error() {
 				t.Errorf("Circle.SetRadius() = %v, want %v", got, tt.want)
 			}
 		})
@@ -58,7 +62,10 @@ func TestCircle_GetRadius(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.GetRadius() got = %v, want %v", got, tt.want)
 			}
-			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
+			if got1 == nil && got1 != tt.wantErr {
+				t.Errorf("Circle.GetRadius() gotErr = %v, want %v", got1, tt.wantErr)
+			}
+			if got1 != nil && got1.Error() != tt.wantErr.Error() {
 				t.Errorf("Circle.GetRadius() gotErr = %v, want %v", got1, tt.wantErr)
 			}
 		})
@@ -83,7 +90,8 @@ func TestCircle_String(t *testing.T) {
 			c := Circle{
 				radius: tt.fields.radius,
 			}
-			if got := c.String(); got != tt.want {
+			got := c.String()
+			if got != tt.want {
 				t.Errorf("Circle.String() = %v, want %v", got, tt.want)
 			}
 		})
@@ -113,7 +121,10 @@ func TestCircle_Perimeter(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Perimeter() got = %v, want %v", got, tt.want)
 			}
-			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
+			if got1 == nil && got1 != tt.wantErr {
+				t.Errorf("Circle.Perimeter() gotErr = %v, want %v", got1, tt.wantErr)
+			}
+			if got1 != nil && got1.Error() != tt.wantErr.Error() {
 				t.Errorf("Circle.Perimeter() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
@@ -143,7 +154,10 @@ func TestCircle_Area(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Circle.Area() got = %v, want %v", got, tt.want)
 			}
-			if fmt.Sprint(got1) != fmt.Sprint(tt.wantErr) {
+			if got1 == nil && got1 != tt.wantErr {
+				t.Errorf("Circle.Area() gotErr = %v, want %v", got1, tt.wantErr)
+			}
+			if got1 != nil && got1.Error() != tt.wantErr.Error() {
 				t.Errorf("Circle.Area() got1 = %v, want %v", got1, tt.wantErr)
 			}
 		})
