@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/wshaman/course-grpc/common/transport"
+	"github.com/lunarnuts/go-course/tree/lesson07/task02/common/transport"
 )
 
 var Data = Database{
