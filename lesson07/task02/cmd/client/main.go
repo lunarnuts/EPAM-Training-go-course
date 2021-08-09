@@ -34,7 +34,7 @@ out:
 		fmt.Print("->")
 		reader := bufio.NewReader(os.Stdin)
 		pp, _ := reader.ReadString('\n')
-		pp = strings.Replace(pp, "\n", "", -1)
+		pp = strings.TrimSpace(pp)
 		switch pp {
 		case "1":
 			Register(c)
@@ -53,7 +53,7 @@ func Register(c transport.UserRegisterClient) {
 	fmt.Print("-> ")
 	reader := bufio.NewReader(os.Stdin)
 	pp, _ := reader.ReadString('\n')
-	pp = strings.Replace(pp, "\n", "", -1)
+	pp = strings.TrimSpace(pp)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	r, err := c.UserRegister(ctx, &transport.UserRegisterRequest{
