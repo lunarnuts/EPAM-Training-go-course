@@ -1,0 +1,26 @@
+syntax = "proto3";
+option go_package = "github.com/lunarnuts/go-course/lesson07/task02/common/transport";
+
+message EmptyRequest { }
+
+message UserRegisterRequest {
+  string name = 1;
+}
+
+message UserRegisterResponse {
+  int64 result = 1;
+}
+
+message UsersListResponse {
+  repeated Person result = 1;
+}
+
+message Person {
+  int64 id = 1;
+  string name = 2;
+}
+
+service UserRegister {
+  rpc UserRegister (UserRegisterRequest)  returns (UserRegisterResponse);
+  rpc UsersList (EmptyRequest) returns (UsersListResponse);
+}
