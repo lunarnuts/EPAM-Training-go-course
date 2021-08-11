@@ -30,7 +30,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				Value: name + ":" + address,
 			}
 			http.SetCookie(w, cookie)
-			_, err := http.PostForm("http://localhost:8081", formData)
+			_, err := http.PostForm("http://store:8081", formData)
 			if err != nil {
 				log.Print(err)
 				return

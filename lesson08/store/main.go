@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	util "github.com/lunarnuts/go-course/tree/lesson08/store/util"
+	util "github.com/lunarnuts/go-course/tree/lesson08/lesson08/store/util"
 )
 
 func main() {

@@ -4,7 +4,8 @@ WORKDIR /serverapp
 
 COPY util ./util
 COPY go.mod ./
-COPY go.sum ./
+COPY index.html ./
+#COPY go.sum ./
 RUN go mod download
 
 COPY *.go ./
