@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"text/template"
-	"time"
 )
 
 type myError struct {
@@ -20,11 +20,21 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		case "GET":
 			http.ServeFile(w, r, "index.html")
 		case "POST":
+
 			name := r.FormValue("name")
 			address := r.FormValue("address")
-			expiration := time.Now().Add(365 * 24 * time.Hour)
-			cookie := http.Cookie{Name: "token", Value: fmt.Sprintf("%s:%s", name, address), Expires: expiration}
-			http.SetCookie(w, &cookie)
+			formData := url.Values{
+				"token": []string{fmt.Sprintf("%s:%s", name, address)}}
+			cookie := &http.Cookie{
+				Name:  "token",
+				Value: name + ":" + address,
+			}
+			http.SetCookie(w, cookie)
+			_, err := http.PostForm("http://localhost:8081", formData)
+			if err != nil {
+				log.Print(err)
+				return
+			}
 			http.ServeFile(w, r, "index.html")
 		}
 	} else {

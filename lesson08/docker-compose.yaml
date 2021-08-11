@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+
+  server:
+    build: server/
+    ports:
+      - 8080:8080
+  store:
+    build: store/
+    ports:
+      - 8081:8081
+    depends_on: 
+      - server
