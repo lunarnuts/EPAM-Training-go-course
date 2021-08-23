@@ -1,0 +1,48 @@
+
+syntax = "proto3";
+option go_package = "github.com/lunarnuts/go-course/tree/course-project/src/common/transport";
+
+message EmptyRequest { }
+
+message CurrentWeatherRequest {
+  string name = 1;
+}
+
+message CurrentWeatherResponse {
+    string cityName = 1;
+    string temperature = 2;
+}
+
+message ListRequestsResponse {
+  repeated CityWeather result = 1;
+}
+
+message CityWeather {
+    string cityName = 1;
+    string timeRequested = 2;
+    string temperature = 3;
+}
+
+service WeatherService {
+  rpc GetCurrentWeather (CurrentWeatherRequest)  returns (CurrentWeatherResponse);
+  rpc ListRequests (EmptyRequest) returns (ListRequestsResponse);
+}
+/*city:CityName
+ 	
+This request 		will be responded with current weather in CityName.
+ 		
+This request 		must be logged. Eg:
+ 		
+{“city”: 		“cityName”, “time_requested”: currentTime, “temperatue”: 		someValue}
+ 	
+	
+listRequests
+ 	
+Respond with 		list of all requests:
+ 		
+[{“city”: 			“cityName”, “time_requested”: currentTime, “temperatue”: 			someValue},
+ {“city”: “cityName”, “time_requested”: 			currentTime, “temperatue”: someValue},
+ {“city”: 			“cityName”, “time_requested”: currentTime, “temperatue”: 			someValue}]
+ 		
+	
+*/
