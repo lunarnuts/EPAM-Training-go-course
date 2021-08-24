@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/handlers/request"
 	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/db"
 	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/models/records"
 )
@@ -50,7 +49,7 @@ func main() {
 		func(w http.ResponseWriter, r *http.Request) {
 			records.Delete(pool, w, r)
 		}).Methods("DELETE")
-	router.Path("/api/v0/weather").Queries("city", "{cityName}").HandlerFunc(request.GetCurrentWeather).Name("GetCurrentWeather").Methods(http.MethodGet)
+	router.Path("/api/v0/weather").Queries("city", "{cityName}").HandlerFunc().Name("GetCurrentWeather").Methods(http.MethodGet)
 	log.Println("Starting API server on 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)

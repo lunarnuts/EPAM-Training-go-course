@@ -1,58 +1,38 @@
 package db
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"log"
 
-	"github.com/lunarnuts/go-course/tree/course-project/src/common/transport"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/pkg/errors"
 )
 
-var Data = Database{
-	Map:  make(map[string]*transport.Person),
-	List: make([]*transport.Person, 0),
-	Len:  int64(0),
+type DBSetup struct {
+	User   string
+	Passwd string
+	Host   string
+	Port   int
+	Name   string
+	Type   string
 }
 
-type Database struct {
-	Map  map[string]*transport.Person
-	List []*transport.Person
-	Len  int64
+func (dbs DBSetup) String() string {
+	return fmt.Sprintf("%s://%s:%s@%s:%d/%s?sslmode=disable",
+		dbs.Type, dbs.User, dbs.Passwd, dbs.Host, dbs.Port, dbs.Name)
 }
 
-func LoadPersistent() []*transport.Person {
-	return Data.List
-}
-
-func CheckIfExists(person *transport.UserRegisterRequest) bool {
-	_, ok := Data.Map[person.Name]
-	return ok
-}
-
-func AddToDB(person *transport.UserRegisterRequest) error {
-	if CheckIfExists(person) {
-		return fmt.Errorf("user already exists")
+func New(dbs DBSetup) (*pgxpool.Pool, error) {
+	t, err := sql.Open(dbs.Type, dbs.String())
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to open DB")
 	}
-	newPerson := &transport.Person{
-		Id:   Data.Len,
-		Name: person.Name,
+	return t, nil
+	pool, err := pgxpool.Connect(context.Background(), dbs.String())
+	if err != nil {
+		log.Fatalf("Unable to connection to database: %v", err)
 	}
-	log.Printf("New entry: id: %d  name: \"%s\"", newPerson.Id, newPerson.Name)
-	Data.List = append(Data.List, newPerson)
-	Data.Map[person.GetName()] = newPerson
-	Data.Len++
-	return nil
-}
-
-func Populate() {
-	var List = []*transport.UserRegisterRequest{
-		{Name: "Egor Uliyanov"},
-		{Name: "ilya Komarskih"},
-		{Name: "Ivan Ivanov"},
-		{Name: "Alex Fergusson"},
-		{Name: "Julian Casablancas"},
-		{Name: "Pavel Lyadov"},
-	}
-	for _, person := range List {
-		AddToDB(person)
-	}
+	defer pool.Close()
 }
