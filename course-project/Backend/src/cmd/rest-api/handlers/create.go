@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/lib"
-	records "github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/models"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/cmd/rest-api/lib"
+	records "github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/models"
 )
 
 func Insert(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {

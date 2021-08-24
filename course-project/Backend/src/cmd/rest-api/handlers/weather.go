@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/lib"
-	records "github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/models"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/cmd/rest-api/lib"
+	records "github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/models"
 )
 
 func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
@@ -23,7 +24,12 @@ func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) 
 		lib.ReturnInternalError(w, err)
 		return
 	}
-	weather := lib.GetCurrentWeatherFromAPI(cityName)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	weather, err := lib.GetCurrentWeatherFromAPI(ctx, cityName)
+	if err != nil {
+		lib.ReturnInternalError(w, err)
+	}
 	rec.Temperature = weather.Temperature
 	err = records.Update(p, id, rec)
 	if err != nil {

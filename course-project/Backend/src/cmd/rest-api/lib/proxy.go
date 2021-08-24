@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -23,7 +24,7 @@ type Weather struct {
 	Temperature float64 `json:"temperature"`
 }
 
-func GetCurrentWeatherFromAPI(cityName string) Weather {
+func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, error) {
 	r := fmt.Sprintf(uri, cityName) //"https://" + rapidApi + "/find?q=" + cityName + "&cnt=1&mode=null&lon=0&lat=0&units=metric"
 	req, err := http.NewRequest("GET", r, nil)
 	if err != nil {
@@ -34,21 +35,23 @@ func GetCurrentWeatherFromAPI(cityName string) Weather {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Print(err)
+		return Weather{}, fmt.Errorf("WeatherApi service unreachable: %v", err)
 	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 	var ff Forecast
 	err = json.Unmarshal(body, &ff)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return Weather{}, fmt.Errorf("Cant parse JSON: %v", err)
 	}
 	l, ok := ff.List[0]["main"].(map[string]interface{})
 	if !ok {
-		log.Print(ok)
+		return Weather{}, fmt.Errorf("WeatherApi - Empty Response")
 	}
 	forecast := Weather{
 		CityName:    ff.List[0]["name"].(string),
 		Temperature: l["temp"].(float64),
 	}
-	return forecast
+	return forecast, nil
 }

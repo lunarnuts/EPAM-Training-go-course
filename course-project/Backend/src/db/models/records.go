@@ -45,7 +45,6 @@ func SelectAll(p *pgxpool.Pool) ([]Record, error) {
 		}
 		recs = append(recs, rec)
 	}
-	log.Println(recs)
 	return recs, nil
 }
 

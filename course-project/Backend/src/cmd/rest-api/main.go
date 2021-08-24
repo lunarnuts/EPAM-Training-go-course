@@ -5,21 +5,26 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/handlers"
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/db"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/cmd/rest-api/handlers"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/db"
+	"github.com/wshaman/course-db/src/utils"
 )
+
+func dbsFromEnv() db.DBSetup {
+	dbs := db.DBSetup{
+		User:   utils.EnvOrDef("DB_USER", "postgres"),
+		Passwd: utils.EnvOrDef("DB_PASSWD", "1234"),
+		Host:   utils.EnvOrDef("DB_HOST", "localhost"),
+		Port:   utils.EnvOrDefInt("DB_PORT", 5432),
+		Name:   utils.EnvOrDef("DB_NAME", "postgres"),
+		Type:   "postgres",
+	}
+	return dbs
+}
 
 func main() {
 	r := mux.NewRouter()
-	dbs := db.DBSetup{
-		User:   "postgres",
-		Passwd: "1234",
-		Host:   "localhost",
-		Port:   5432,
-		Name:   "postgres",
-		Type:   "postgres",
-	}
-	pool, err := db.New(dbs)
+	pool, err := db.New(dbsFromEnv())
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v", err)
 	}
