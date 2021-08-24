@@ -2,121 +2,84 @@ package records
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
-	"strconv"
+	"fmt"
 
 	"log"
 
-	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Record struct {
-	Id            int    `json:"id", db:"id"`
-	CityName      string `json:"cityName", db:"cityName"`
-	TimeRequested string `json:"timeRequested", db:"timeRequested"`
-	Temperature   string `json:"temperature", db:"temperature"`
+	Id            int     `json:"id" db:"id"`
+	CityName      string  `json:"cityName" db:"cityName"`
+	TimeRequested string  `json:"timeRequested" db:"timeRequested"`
+	Temperature   float64 `json:"temperature" db:"temperature"`
 }
 
-func SelectAll(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
-
+func SelectAll(p *pgxpool.Pool) ([]Record, error) {
 	conn, err := p.Acquire(context.Background())
 	if err != nil {
 		log.Printf("Unable to acquire a database connection: %v\n", err)
-		w.WriteHeader(500)
-		return
+		return []Record{}, err
+	}
+	defer conn.Release()
+
+	rows, err := conn.Query(context.Background(),
+		"SELECT * FROM logbook")
+	if err != nil {
+		log.Printf("Query failed with: %v", err)
+	}
+	var recs []Record
+	for rows.Next() {
+		var rec Record
+		err = rows.Scan(&rec.Id, &rec.CityName, &rec.TimeRequested, &rec.Temperature)
+		if err == pgx.ErrNoRows {
+			fmt.Printf("No rows: %v", err)
+			return recs, err
+		}
+
+		if err != nil {
+			log.Printf("Unable to SELECT: %v", err)
+			return recs, err
+		}
+		recs = append(recs, rec)
+	}
+	log.Println(recs)
+	return recs, nil
+}
+
+func Select(p *pgxpool.Pool, id uint64) (Record, error) {
+	conn, err := p.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Unable to acquire a database connection: %v\n", err)
+		return Record{}, err
 	}
 	defer conn.Release()
 
 	row := conn.QueryRow(context.Background(),
-		"SELECT * FROM logbook",
+		"SELECT id, cityName, timeRequested, temperature FROM logbook WHERE id = $1",
 		id)
 
 	var rec Record
 	err = row.Scan(&rec.Id, &rec.CityName, &rec.TimeRequested, &rec.Temperature)
 	if err == pgx.ErrNoRows {
-		w.WriteHeader(404)
-		return
+		return rec, err
 	}
 
 	if err != nil {
 		log.Printf("Unable to SELECT: %v", err)
-		w.WriteHeader(500)
-		return
+		return rec, err
 	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(rec)
-	if err != nil {
-		log.Printf("Unable to encode json: %v", err)
-		w.WriteHeader(500)
-		return
-	}
+	return rec, nil
 }
 
-func Select(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
-
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v\n", err)
-		w.WriteHeader(500)
-		return
-	}
-	defer conn.Release()
-
-	row := conn.QueryRow(context.Background(),
-		"SELECT id, citynName, timeRequested, temperature FROM logbook WHERE id = $1",
-		id)
-
-	var rec Record
-	err = row.Scan(&rec.Id, &rec.CityName, &rec.TimeRequested, &rec.Temperature)
-	if err == pgx.ErrNoRows {
-		w.WriteHeader(404)
-		return
-	}
-
-	if err != nil {
-		log.Printf("Unable to SELECT: %v", err)
-		w.WriteHeader(500)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(rec)
-	if err != nil {
-		log.Printf("Unable to encode json: %v", err)
-		w.WriteHeader(500)
-		return
-	}
-}
-
-func Insert(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	var rec Record
-	err := json.NewDecoder(r.Body).Decode(&rec)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
+func Insert(p *pgxpool.Pool, rec Record) (uint64, error) {
 
 	conn, err := p.Acquire(context.Background())
 	if err != nil {
 		log.Printf("Unable to acquire a database connection: %v", err)
-		w.WriteHeader(500)
-		return
+		return 0, err
 	}
 	defer conn.Release()
 
@@ -127,41 +90,18 @@ func Insert(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
 	err = row.Scan(&id)
 	if err != nil {
 		log.Printf("Unable to INSERT: %v", err)
-		w.WriteHeader(500)
-		return
+		return 0, err
 	}
 
-	resp := make(map[string]string, 1)
-	resp["id"] = strconv.FormatUint(id, 10)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(resp)
-	if err != nil {
-		log.Printf("Unable to encode json: %v", err)
-		w.WriteHeader(500)
-		return
-	}
+	return id, nil
 }
 
-func Update(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
-
-	var rec Record
-	err = json.NewDecoder(r.Body).Decode(&rec)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
+func Update(p *pgxpool.Pool, id uint64, rec Record) error {
 
 	conn, err := p.Acquire(context.Background())
 	if err != nil {
 		log.Printf("Unable to acquire a database connection: %v", err)
-		w.WriteHeader(500)
-		return
+		return err
 	}
 	defer conn.Release()
 
@@ -170,45 +110,33 @@ func Update(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
 		id, rec.CityName, rec.TimeRequested, rec.Temperature)
 	if err != nil {
 		log.Printf("Unable to UPDATE: %v\n", err)
-		w.WriteHeader(500)
-		return
+		return err
 	}
 
 	if ct.RowsAffected() == 0 {
-		w.WriteHeader(404)
-		return
+		return err
 	}
-
-	w.WriteHeader(200)
+	return nil
 }
 
-func Delete(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil { // bad request
-		w.WriteHeader(400)
-		return
-	}
+func Delete(p *pgxpool.Pool, id uint64) error {
 
 	conn, err := p.Acquire(context.Background())
 	if err != nil {
 		log.Printf("Unable to acquire a database connection: %v", err)
-		w.WriteHeader(500)
-		return
+		return err
 	}
 	defer conn.Release()
 
 	ct, err := conn.Exec(context.Background(), "DELETE FROM logbook WHERE id = $1", id)
 	if err != nil {
 		log.Printf("Unable to DELETE: %v", err)
-		w.WriteHeader(500)
-		return
+		return err
 	}
 
 	if ct.RowsAffected() == 0 {
-		w.WriteHeader(404)
-		return
+		return err
 	}
 
-	w.WriteHeader(200)
+	return nil
 }

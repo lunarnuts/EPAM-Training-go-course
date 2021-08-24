@@ -2,12 +2,10 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/pkg/errors"
 )
 
 type DBSetup struct {
@@ -25,14 +23,10 @@ func (dbs DBSetup) String() string {
 }
 
 func New(dbs DBSetup) (*pgxpool.Pool, error) {
-	t, err := sql.Open(dbs.Type, dbs.String())
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to open DB")
-	}
-	return t, nil
+
 	pool, err := pgxpool.Connect(context.Background(), dbs.String())
 	if err != nil {
 		log.Fatalf("Unable to connection to database: %v", err)
 	}
-	defer pool.Close()
+	return pool, err
 }

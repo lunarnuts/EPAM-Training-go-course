@@ -19,8 +19,8 @@ type Forecast struct {
 }
 
 type Weather struct {
-	CityName    string `json:"cityName"`
-	Temperature string `json:"temperature"`
+	CityName    string  `json:"cityName"`
+	Temperature float64 `json:"temperature"`
 }
 
 func GetCurrentWeatherFromAPI(cityName string) Weather {
@@ -31,7 +31,6 @@ func GetCurrentWeatherFromAPI(cityName string) Weather {
 	}
 	req.Header.Add("x-rapidapi-host", rapidApi)
 	req.Header.Add("x-rapidapi-key", rapidKey)
-	log.Print(req.Body)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Print(err)
@@ -47,10 +46,9 @@ func GetCurrentWeatherFromAPI(cityName string) Weather {
 	if !ok {
 		log.Print(ok)
 	}
-	log.Printf("%+v", l["temp"])
 	forecast := Weather{
 		CityName:    ff.List[0]["name"].(string),
-		Temperature: fmt.Sprintf("%.1f", l["temp"].(float64)),
+		Temperature: l["temp"].(float64),
 	}
 	return forecast
 }

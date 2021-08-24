@@ -17,5 +17,5 @@ func IDFromVars(r *http.Request) (uint, error) {
 }
 
 func CityNameFromVars(r *http.Request) string {
-	return r.FormValue("cityName")
+	return r.FormValue("city")
 }
