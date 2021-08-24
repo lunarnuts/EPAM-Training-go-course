@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/lunarnuts/go-course/tree/course-project/src/cmd/rest-api/handlers/request"
-	"github.com/lunarnuts/go-course/tree/course-project/src/db/db"
-	"github.com/lunarnuts/go-course/tree/course-project/src/db/models/records"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/handlers/request"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/db"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/models/records"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 		User:   "postgres",
 		Passwd: "1234",
 		Host:   "localhost",
-		Port:   "5432",
+		Port:   5432,
 		Name:   "postgres",
 		Type:   "postgres",
 	}
