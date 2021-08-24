@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/db"
-	_ "github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/migrations"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/db"
+	_ "github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/migrations"
 	"github.com/wshaman/course-db/src/utils"
 	"github.com/wshaman/migrate"
 )

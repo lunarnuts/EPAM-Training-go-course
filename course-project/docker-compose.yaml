@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  server:
+    build: Backend/
+    ports: 
+      - 8080:8080
+  postgres:
+    image: postgres:13.1
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - APP_DB_USER=docker
+      - APP_DB_PASS=docker
+      - APP_DB_NAME=docker
+    volumes:
+      - ./DB:/docker-entrypoint-initdb.d/
+    ports:
+      - 15432:5432
