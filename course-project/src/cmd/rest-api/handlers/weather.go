@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -37,12 +35,5 @@ func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(500)
 		return
 	}
-	//lib.ReturnJSON(w, rec)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(rec)
-	if err != nil {
-		log.Printf("Unable to encode json: %v", err)
-		w.WriteHeader(500)
-		return
-	}
+	lib.ReturnJSON(w, rec)
 }

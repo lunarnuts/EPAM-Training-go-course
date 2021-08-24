@@ -7,12 +7,12 @@ import (
 )
 
 func ReturnJSON(w http.ResponseWriter, data interface{}) {
-	b, err := json.Marshal(data)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
-		log.Fatal(err)
-	}
-	w.Header().Add("Content-Type", "application/json")
-	if _, err := w.Write(b); err != nil {
-		log.Fatal(err)
+		log.Printf("Unable to encode json: %v", err)
+		ReturnInternalError(w, err)
+		return
 	}
 }

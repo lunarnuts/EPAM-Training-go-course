@@ -1,35 +1,23 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"log"
-
-	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/src/cmd/rest-api/lib"
 	records "github.com/lunarnuts/go-course/tree/course-project/course-project/src/db/models"
 )
 
 func Select(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := lib.IDFromVars(r)
 	if err != nil { // bad request
-		w.WriteHeader(400)
+		lib.ReturnClientError(w, err.Error())
 		return
 	}
 	rec, err := records.Select(p, id)
 	if err != nil {
-		w.WriteHeader(500)
+		lib.ReturnInternalError(w, err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(rec)
-	if err != nil {
-		log.Printf("Unable to encode json: %v", err)
-		w.WriteHeader(500)
-		return
-	}
+	lib.ReturnJSON(w, rec)
 }

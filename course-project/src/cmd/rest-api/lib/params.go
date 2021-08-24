@@ -7,13 +7,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func IDFromVars(r *http.Request) (uint, error) {
+func IDFromVars(r *http.Request) (uint64, error) {
 	idString := mux.Vars(r)["id"]
 	i, err := strconv.Atoi(idString)
 	if err != nil {
 		return 0, err
 	}
-	return uint(i), nil
+	return uint64(i), nil
 }
 
 func CityNameFromVars(r *http.Request) string {
