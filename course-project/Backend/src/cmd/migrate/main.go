@@ -8,10 +8,11 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/db"
-	_ "github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/migrations"
-	"github.com/wshaman/course-db/src/utils"
 	"github.com/wshaman/migrate"
+
+	"github.com/wshaman/course-db/src/db/db"
+	_ "github.com/wshaman/course-db/src/db/migrations"
+	"github.com/wshaman/course-db/src/utils"
 )
 
 func help() {
@@ -31,10 +32,10 @@ Eg:
 func dbsFromEnv() db.DBSetup {
 	dbs := db.DBSetup{
 		User:   utils.EnvOrDef("DB_USER", "postgres"),
-		Passwd: utils.EnvOrDef("DB_PASSWD", "pwd123"),
+		Passwd: utils.EnvOrDef("DB_PASSWD", "1234"),
 		Host:   utils.EnvOrDef("DB_HOST", "localhost"),
-		Port:   utils.EnvOrDefInt("DB_PORT", 15432),
-		Name:   utils.EnvOrDef("DB_NAME", "course_db"),
+		Port:   utils.EnvOrDefInt("DB_PORT", 5432),
+		Name:   utils.EnvOrDef("DB_NAME", "postgres"),
 		Type:   "postgres",
 	}
 	return dbs
