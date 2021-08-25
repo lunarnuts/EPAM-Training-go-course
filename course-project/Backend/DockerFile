@@ -2,12 +2,12 @@ FROM golang:1.16-alpine
 
 WORKDIR /serverapp
 
-COPY cmd ./cmd
-COPY go.mod ./
-COPY db ./db
+COPY src ./src
+WORKDIR /serverapp/src
+RUN go mod download
 
-COPY serverApp ./
-
+WORKDIR /serverapp/src/cmd/rest-api
+RUN go build -o /docker-main-server
 EXPOSE 8080
 
-CMD [ "/serverApp" ]
+CMD [ "/docker-main-server" ]

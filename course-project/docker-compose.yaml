@@ -1,14 +1,14 @@
-version: '3'
+version: "3"
 
 services:
   server:
     build: Backend/
-    ports: 
+    ports:
       - 8080:8080
   postgres:
     image: postgres:13.1
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root"]
       timeout: 45s
       interval: 10s
       retries: 10
@@ -22,4 +22,4 @@ services:
     volumes:
       - ./DB:/docker-entrypoint-initdb.d/
     ports:
-      - 15432:5432
+      - 5432:5432
