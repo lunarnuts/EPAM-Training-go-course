@@ -3,6 +3,9 @@ version: "3"
 services:
   server:
     build: Backend/
+    restart: always
+    depends_on:
+      - postgres
     ports:
       - 8080:8080
   postgres:
@@ -14,12 +17,12 @@ services:
       retries: 10
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - APP_DB_USER=docker
-      - APP_DB_PASS=docker
-      - APP_DB_NAME=docker
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - APP_DB_USER=postgres
+      - APP_DB_PASS=postgres
+      - APP_DB_NAME=postgres
     volumes:
-      - ./DB:/docker-entrypoint-initdb.d/
+      - ./DB/:/docker-entrypoint-initdb.d/
     ports:
       - 5432:5432
