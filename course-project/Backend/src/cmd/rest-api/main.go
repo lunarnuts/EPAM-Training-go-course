@@ -13,12 +13,11 @@ import (
 func dbsFromEnv() db.DBSetup {
 	dbs := db.DBSetup{
 		User:   utils.EnvOrDef("POSTGRES_USER", "postgres"),
-		Passwd: utils.EnvOrDef("POSTGRES_PASSWORD", "postgres"),
-		Host:   utils.EnvOrDef("DB_HOST", "postgres"),
-		//postgres://postgres:postgres@postgres:5432/postgres
-		Port: utils.EnvOrDefInt("DB_PORT", 5432),
-		Name: utils.EnvOrDef("POSTGRES_DB", "postgres"),
-		Type: "postgres",
+		Passwd: utils.EnvOrDef("POSTGRES_PASSWORD", "1234"),
+		Host:   utils.EnvOrDef("DB_HOST", "localhost"),
+		Port:   utils.EnvOrDefInt("DB_PORT", 5432),
+		Name:   utils.EnvOrDef("POSTGRES_DB", "postgres"),
+		Type:   "postgres",
 	}
 	return dbs
 }

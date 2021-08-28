@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -15,6 +17,17 @@ type DBSetup struct {
 	Port   int
 	Name   string
 	Type   string
+}
+
+type Pooler interface {
+	Acquire(ctx context.Context) (*pgxpool.Conn, error)
+}
+
+type DBConn interface {
+	//Begin(ctx context.Context) (pgx.Tx, error)
+	Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
 }
 
 func (dbs DBSetup) String() string {
@@ -29,4 +42,14 @@ func New(dbs DBSetup) (*pgxpool.Pool, error) {
 		log.Fatalf("Unable to connection to database: %v", err)
 	}
 	return pool, err
+}
+
+func AcquireConn(p Pooler) (conn DBConn, err error) {
+	dbConn, err := p.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Unable to acquire a database connection: %v\n", err)
+		return conn, err
+	}
+	conn = dbConn
+	return conn, nil
 }

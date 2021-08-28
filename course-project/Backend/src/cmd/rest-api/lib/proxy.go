@@ -45,6 +45,9 @@ func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, er
 		log.Print(err)
 		return Weather{}, fmt.Errorf("Cant parse JSON: %v", err)
 	}
+	if len(ff.List) < 1 {
+		return Weather{}, fmt.Errorf("WeatherApi - Empty Response")
+	}
 	l, ok := ff.List[0]["main"].(map[string]interface{})
 	if !ok {
 		return Weather{}, fmt.Errorf("WeatherApi - Empty Response")

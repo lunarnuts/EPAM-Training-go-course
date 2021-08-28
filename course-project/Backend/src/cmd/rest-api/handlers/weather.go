@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/cmd/rest-api/lib"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/db"
 	records "github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/models"
 )
 
@@ -19,7 +20,12 @@ func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) 
 		TimeRequested: timeRequested.String(),
 		Temperature:   float64(temperature),
 	}
-	id, err := records.Insert(p, rec)
+	conn, err := db.AcquireConn(p)
+	if err != nil {
+		lib.ReturnInternalError(w, err)
+		return
+	}
+	id, err := records.Insert(conn, rec)
 	if err != nil {
 		lib.ReturnInternalError(w, err)
 		return
@@ -31,12 +37,12 @@ func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) 
 		lib.ReturnInternalError(w, err)
 	}
 	rec.Temperature = weather.Temperature
-	err = records.Update(p, id, rec)
+	err = records.Update(conn, id, rec)
 	if err != nil {
 		lib.ReturnInternalError(w, err)
 		return
 	}
-	rec, err = records.Select(p, id)
+	rec, err = records.Select(conn, id)
 	if err != nil {
 		w.WriteHeader(500)
 		return

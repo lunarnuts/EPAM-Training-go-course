@@ -7,28 +7,23 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/lunarnuts/go-course/tree/course-project/course-project/Backend/src/db/db"
 )
 
 type Record struct {
-	Id            int     `json:"id" db:"id"`
+	Id            uint64  `json:"id" db:"id"`
 	CityName      string  `json:"cityName" db:"cityName"`
 	TimeRequested string  `json:"timeRequested" db:"timeRequested"`
 	Temperature   float64 `json:"temperature" db:"temperature"`
 }
 
-func SelectAll(p *pgxpool.Pool) ([]Record, error) {
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v\n", err)
-		return []Record{}, err
-	}
-	defer conn.Release()
+func SelectAll(conn db.DBConn) ([]Record, error) {
 
 	rows, err := conn.Query(context.Background(),
 		"SELECT * FROM logbook")
 	if err != nil {
 		log.Printf("Query failed with: %v", err)
+		return []Record{}, err
 	}
 	var recs []Record
 	for rows.Next() {
@@ -48,20 +43,14 @@ func SelectAll(p *pgxpool.Pool) ([]Record, error) {
 	return recs, nil
 }
 
-func Select(p *pgxpool.Pool, id uint64) (Record, error) {
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v\n", err)
-		return Record{}, err
-	}
-	defer conn.Release()
+func Select(conn db.DBConn, id uint64) (Record, error) {
 
 	row := conn.QueryRow(context.Background(),
 		"SELECT id, cityName, timeRequested, temperature FROM logbook WHERE id = $1",
 		id)
 
 	var rec Record
-	err = row.Scan(&rec.Id, &rec.CityName, &rec.TimeRequested, &rec.Temperature)
+	err := row.Scan(&rec.Id, &rec.CityName, &rec.TimeRequested, &rec.Temperature)
 	if err == pgx.ErrNoRows {
 		return rec, err
 	}
@@ -73,20 +62,13 @@ func Select(p *pgxpool.Pool, id uint64) (Record, error) {
 	return rec, nil
 }
 
-func Insert(p *pgxpool.Pool, rec Record) (uint64, error) {
-
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v", err)
-		return 0, err
-	}
-	defer conn.Release()
+func Insert(conn db.DBConn, rec Record) (uint64, error) {
 
 	row := conn.QueryRow(context.Background(),
-		"INSERT INTO logbook (cityName, timeRequested) VALUES ($1, $2) RETURNING id",
-		rec.CityName, rec.TimeRequested)
+		"INSERT INTO logbook (cityName, timeRequested, temperature) VALUES ($1, $2, $3) RETURNING id",
+		rec.CityName, rec.TimeRequested, 0.0)
 	var id uint64
-	err = row.Scan(&id)
+	err := row.Scan(&id)
 	if err != nil {
 		log.Printf("Unable to INSERT: %v", err)
 		return 0, err
@@ -95,14 +77,7 @@ func Insert(p *pgxpool.Pool, rec Record) (uint64, error) {
 	return id, nil
 }
 
-func Update(p *pgxpool.Pool, id uint64, rec Record) error {
-
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v", err)
-		return err
-	}
-	defer conn.Release()
+func Update(conn db.DBConn, id uint64, rec Record) error {
 
 	ct, err := conn.Exec(context.Background(),
 		"UPDATE logbook SET cityName = $2, timeRequested = $3, temperature = $4 WHERE id = $1",
@@ -118,14 +93,7 @@ func Update(p *pgxpool.Pool, id uint64, rec Record) error {
 	return nil
 }
 
-func Delete(p *pgxpool.Pool, id uint64) error {
-
-	conn, err := p.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Unable to acquire a database connection: %v", err)
-		return err
-	}
-	defer conn.Release()
+func Delete(conn db.DBConn, id uint64) error {
 
 	ct, err := conn.Exec(context.Background(), "DELETE FROM logbook WHERE id = $1", id)
 	if err != nil {
