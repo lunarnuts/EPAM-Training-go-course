@@ -25,39 +25,45 @@ func dbsFromEnv() db.DBSetup {
 
 func main() {
 	r := mux.NewRouter()
-	conn, err := db.New(dbsFromEnv())
+	pool, err := db.New(dbsFromEnv())
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v", err)
 	}
-	defer conn.Close()
+	defer pool.Close()
 
 	r.HandleFunc("/api/v1/contacts",
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.List(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.List(&conn, w, r)
 		}).Methods("GET")
 
 	r.HandleFunc("/api/v1/contacts/{id:[0-9]+}",
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.Read(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.Read(&conn, w, r)
 		}).Methods("GET")
 
 	r.HandleFunc("/api/v1/contacts",
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.Insert(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.Insert(&conn, w, r)
 		}).Methods("POST")
 
 	r.HandleFunc("/api/v1/contacts/{id:[0-9]+}",
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.Update(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.Update(&conn, w, r)
 		}).Methods("PUT")
 
 	r.HandleFunc("/api/v1/contacts/{id:[0-9]+}",
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.Delete(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.Delete(&conn, w, r)
 		}).Methods("DELETE")
 	r.Path("/api/v1/contacts/assigngroup").Queries("id", "{id}", "gid", "{gid}").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			handlers.AssignContactToGroup(conn, w, r)
+			conn, _ := db.AcquireConn(pool)
+			handlers.AssignContactToGroup(&conn, w, r)
 		}).Name("AssignContactsToGroup").Methods(http.MethodGet)
 	log.Println("Starting API server on 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

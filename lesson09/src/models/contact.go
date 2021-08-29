@@ -1,9 +1,12 @@
 package models
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
+
+	"github.com/jackc/pgx/v4"
+	"github.com/lunarnuts/go-course/tree/lesson09/src/db"
 )
 
 type Contact struct {
@@ -14,23 +17,23 @@ type Contact struct {
 	Group   string `json:"group" db:"gname"`
 }
 
-func ListContacts(db *sql.DB) ([]Contact, error) {
-	rows, err := db.Query(
-		`select p.id, p.name, p.phone, g.name from phonebook p
-		left join groups g on g.id=c.group_id`)
+func ListContacts(db db.DBConn) ([]Contact, error) {
+	rows, err := db.Query(context.Background(),
+		`select p.id, p.name, p.phone, p.group_id, g.gname from phonebook p
+		left join groups g on g.group_id=p.group_id`)
 	if err != nil {
 		return nil, err
 	}
 	return rowsToContacts(rows)
 }
 
-func SelectContact(db *sql.DB, id uint64) (Contact, error) {
-	row := db.QueryRow(
+func SelectContact(db db.DBConn, id uint64) (Contact, error) {
+	row := db.QueryRow(context.Background(),
 		`select p.id, p.name, p.phone, g.name from phonebook p
 		left join groups g on g.id=c.group_id where id =$1`, id)
 	c := &Contact{}
 	var s *string
-	if err := row.Scan(&c.ID, &c.Name, &c.Phone, &s); err != nil {
+	if err := row.Scan(&c.ID, &c.Name, &c.Phone, &c.GroupId, &s); err != nil {
 		return Contact{}, fmt.Errorf("failed to fetch user (scan)")
 	}
 	if s == nil {
@@ -40,12 +43,12 @@ func SelectContact(db *sql.DB, id uint64) (Contact, error) {
 	return *c, nil
 }
 
-func rowsToContacts(rows *sql.Rows) ([]Contact, error) {
+func rowsToContacts(rows pgx.Rows) ([]Contact, error) {
 	contacts := make([]Contact, 0)
 	for rows.Next() {
 		c := &Contact{}
 		var s *string
-		if err := rows.Scan(&c.ID, &c.Name, &c.Phone, &s); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Phone, &c.GroupId, &s); err != nil {
 			return nil, fmt.Errorf("failed to fetch users (scan)")
 		}
 		if s == nil {
@@ -57,10 +60,10 @@ func rowsToContacts(rows *sql.Rows) ([]Contact, error) {
 	return contacts, nil
 }
 
-func InsertContact(db *sql.DB, c *Contact) error {
+func InsertContact(db db.DBConn, c *Contact) error {
 	var id int
 	query := "insert into phonebook (name, phone, group_id) values ($1,$2,$3) returning id"
-	if err := db.QueryRow(query, c.Name, c.Phone, c.GroupId).Scan(&id); err != nil {
+	if err := db.QueryRow(context.Background(), query, c.Name, c.Phone, c.GroupId).Scan(&id); err != nil {
 		log.Printf("Error occured: %v", err)
 		return fmt.Errorf("failed to insert into contacts")
 	}
@@ -68,23 +71,23 @@ func InsertContact(db *sql.DB, c *Contact) error {
 	return nil
 }
 
-func UpdateContact(db *sql.DB, c *Contact) error {
+func UpdateContact(db db.DBConn, c *Contact) error {
 	query := "update phonebook set name=$1, phone=$2, group_id=$3 where id=$4;"
-	if _, err := db.Exec(query, c.Name, c.Phone, c.GroupId, c.ID); err != nil {
+	if _, err := db.Exec(context.Background(), query, c.Name, c.Phone, c.GroupId, c.ID); err != nil {
 		return fmt.Errorf("failed to update contact")
 	}
 	return nil
 }
 
-func DeleteContact(db *sql.DB, id uint64) error {
+func DeleteContact(db db.DBConn, id uint64) error {
 	query := "delete from phonebook where id=$1;"
-	if _, err := db.Exec(query, id); err != nil {
+	if _, err := db.Exec(context.Background(), query, id); err != nil {
 		return fmt.Errorf("failed to delete contact")
 	}
 	return nil
 }
 
-func AssignContactToGroup(db *sql.DB, id uint64, gid uint64) error {
+func AssignContactToGroup(db db.DBConn, id uint64, gid uint64) error {
 	c, err := SelectContact(db, id)
 	if err != nil {
 		return fmt.Errorf("failed to fetch user (scan)")

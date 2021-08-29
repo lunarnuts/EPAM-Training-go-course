@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
 	"github.com/lunarnuts/go-course/tree/lesson09/src/cmd/api/lib"
+	"github.com/lunarnuts/go-course/tree/lesson09/src/db"
 	"github.com/lunarnuts/go-course/tree/lesson09/src/models"
 )
 
-func Insert(conn *sql.DB, w http.ResponseWriter, r *http.Request) {
+func Insert(conn *db.DBConn, w http.ResponseWriter, r *http.Request) {
 	var rec models.Contact
 	err := json.NewDecoder(r.Body).Decode(&rec)
 	if err != nil { // bad request
@@ -17,7 +17,7 @@ func Insert(conn *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.InsertContact(conn, &rec)
+	err = models.InsertContact(*conn, &rec)
 	if err != nil {
 		lib.ReturnInternalError(w, err)
 		return

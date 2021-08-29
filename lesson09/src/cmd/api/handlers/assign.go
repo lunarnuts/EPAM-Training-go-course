@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/lunarnuts/go-course/tree/lesson09/src/cmd/api/lib"
+	"github.com/lunarnuts/go-course/tree/lesson09/src/db"
 	"github.com/lunarnuts/go-course/tree/lesson09/src/models"
 )
 
-func AssignContactToGroup(conn *sql.DB, w http.ResponseWriter, r *http.Request) {
+func AssignContactToGroup(conn *db.DBConn, w http.ResponseWriter, r *http.Request) {
 	idString := mux.Vars(r)["id"]
 	gidString := mux.Vars(r)["gid"]
 	id, err := strconv.Atoi(idString)
@@ -25,7 +25,7 @@ func AssignContactToGroup(conn *sql.DB, w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = models.AssignContactToGroup(conn, uint64(id), uint64(gid))
+	err = models.AssignContactToGroup(*conn, uint64(id), uint64(gid))
 	if err != nil {
 		lib.ReturnInternalError(w, err)
 		return
