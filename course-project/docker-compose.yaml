@@ -4,6 +4,11 @@ services:
   server:
     build: Backend/
     restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DB_PORT=5432
+      - POSTGRES_DB=postgres
     depends_on:
       - postgres
     ports:
