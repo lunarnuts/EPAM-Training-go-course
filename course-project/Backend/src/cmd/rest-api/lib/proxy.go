@@ -24,37 +24,68 @@ type Weather struct {
 	Temperature float64 `json:"temperature"`
 }
 
-func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, error) {
-	r := fmt.Sprintf(uri, cityName) //"https://" + rapidApi + "/find?q=" + cityName + "&cnt=1&mode=null&lon=0&lat=0&units=metric"
+func NewRequest(cityName string) (*http.Request, error) {
+	r := fmt.Sprintf(uri, cityName)
 	req, err := http.NewRequest("GET", r, nil)
 	if err != nil {
-		log.Fatal(err)
+
+		return nil, err
 	}
 	req.Header.Add("x-rapidapi-host", rapidApi)
 	req.Header.Add("x-rapidapi-key", rapidKey)
+	return req, nil
+}
+
+func GetResponseFromWeatherApp(req *http.Request) ([]byte, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Print(err)
-		return Weather{}, fmt.Errorf("WeatherApi service unreachable: %v", err)
+		return []byte{}, err
 	}
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	return body, nil
+}
+
+func ParseJSONFromApi(body []byte) (Weather, error) {
 	var ff Forecast
-	err = json.Unmarshal(body, &ff)
+	err := json.Unmarshal(body, &ff)
 	if err != nil {
 		log.Print(err)
-		return Weather{}, fmt.Errorf("Cant parse JSON: %v", err)
+		return Weather{}, fmt.Errorf("cant parse JSON: %v", err)
 	}
 	if len(ff.List) < 1 {
-		return Weather{}, fmt.Errorf("WeatherApi - Empty Response")
+		log.Printf("%v", ff)
+		return Weather{}, fmt.Errorf("weatherApi - Empty Response: len < 1")
 	}
 	l, ok := ff.List[0]["main"].(map[string]interface{})
 	if !ok {
-		return Weather{}, fmt.Errorf("WeatherApi - Empty Response")
+		return Weather{}, fmt.Errorf("weatherApi - Empty Response")
 	}
 	forecast := Weather{
 		CityName:    ff.List[0]["name"].(string),
 		Temperature: l["temp"].(float64),
+	}
+	return forecast, nil
+}
+
+func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, error) {
+	req, err := NewRequest(cityName)
+	if err != nil {
+		log.Printf("Error occured: %v", err)
+		return Weather{}, err
+	}
+	res, err := GetResponseFromWeatherApp(req)
+	if err != nil {
+		log.Printf("Error occured: %v", err)
+		return Weather{}, err
+	}
+	forecast, err := ParseJSONFromApi(res)
+	if err != nil {
+		log.Printf("Error occured: %v", err)
+		return Weather{}, err
 	}
 	return forecast, nil
 }

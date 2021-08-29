@@ -13,4 +13,4 @@ CREATE TABLE logbook (
 	 id SERIAL PRIMARY KEY,
      cityname VARCHAR(64),
      timerequested VARCHAR(64),
-     temperature REAL);
+     temperature REAL DEFAULT 0.0);
