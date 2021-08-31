@@ -10,7 +10,8 @@ services:
       - DB_PORT=5432
       - POSTGRES_DB=postgres
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - 8080:8080
   postgres:
