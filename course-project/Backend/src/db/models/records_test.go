@@ -140,14 +140,14 @@ func TestUpdate(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		wantErr error
 	}{
-		{name: "first", args: args{conn: mockPool}, wantErr: false},
-		{name: "error", args: args{conn: mockPool2}, wantErr: true},
+		{name: "first", args: args{conn: mockPool}, wantErr: nil},
+		{name: "error", args: args{conn: mockPool2}, wantErr: pgx.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Update(tt.args.conn, tt.args.id, tt.args.rec); (err != nil) != tt.wantErr {
+			if err := Update(tt.args.conn, tt.args.id, tt.args.rec); (err != nil) && !errors.Is(err, tt.wantErr) {
 				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -175,14 +175,14 @@ func TestDelete(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		wantErr error
 	}{
-		{name: "first", args: args{conn: mockPool}, wantErr: false},
-		{name: "error", args: args{conn: mockPool2}, wantErr: true},
+		{name: "first", args: args{conn: mockPool}, wantErr: nil},
+		{name: "error", args: args{conn: mockPool2}, wantErr: pgx.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Delete(tt.args.conn, tt.args.id); (err != nil) != tt.wantErr {
+			if err := Delete(tt.args.conn, tt.args.id); (err != nil) && !errors.Is(err, tt.wantErr) {
 				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -202,7 +202,7 @@ func TestInsert(t *testing.T) {
 		timeRequested: "mock time",
 		temperature:   0.0,
 	}
-	mockPool.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(res)
+	mockPool.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(res)
 
 	mockPool2 := pgxpoolmock.NewMockPgxPool(ctrl)
 	res2 := mockRow{
@@ -212,7 +212,7 @@ func TestInsert(t *testing.T) {
 		temperature:   10000.0,
 	}
 
-	mockPool2.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(res2)
+	mockPool2.EXPECT().QueryRow(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(res2)
 
 	type args struct {
 		conn db.DBConn
@@ -222,25 +222,25 @@ func TestInsert(t *testing.T) {
 		name    string
 		args    args
 		want    uint64
-		wantErr bool
+		wantErr error
 	}{
 		{name: "first", args: args{conn: mockPool, rec: Record{
 			Id:            1,
 			CityName:      "Arkham",
 			TimeRequested: "batman time",
 			Temperature:   1000.0,
-		}}, want: 1, wantErr: false},
+		}}, want: 1, wantErr: nil},
 		{name: "error", args: args{conn: mockPool2, rec: Record{
 			Id:            10,
 			CityName:      "City of Sin",
 			TimeRequested: "666",
 			Temperature:   10000.0,
-		}}, want: 10, wantErr: false},
+		}}, want: 10, wantErr: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Insert(tt.args.conn, tt.args.rec)
-			if (err != nil) != tt.wantErr {
+			if (err != nil) && errors.Is(err, tt.wantErr) {
 				t.Errorf("Insert() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

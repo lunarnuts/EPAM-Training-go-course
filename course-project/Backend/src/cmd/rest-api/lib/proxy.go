@@ -15,6 +15,10 @@ const (
 	rapidKey = "639fcce71amsh247779e1c92ce51p1583cdjsn3a618c7821a7"
 )
 
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type Forecast struct {
 	List []map[string]interface{} `json:"list"`
 }
@@ -36,33 +40,33 @@ func NewRequest(cityName string) (*http.Request, error) {
 	return req, nil
 }
 
-func GetResponseFromWeatherApp(req *http.Request) ([]byte, error) {
-	res, err := http.DefaultClient.Do(req)
+func GetResponseFromWeatherApp(req *http.Request, client HTTPClient) (Weather, error) {
+	res, err := client.Do(req)
 	if err != nil {
-		return []byte{}, err
+		return Weather{}, err
 	}
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return []byte{}, err
+		return Weather{}, err
 	}
-	return body, nil
+	return ParseJSONFromApi(body)
 }
 
-func ParseJSONFromApi(body []byte) (Weather, error) {
+func ParseJSONFromApi(body interface{}) (Weather, error) {
 	var ff Forecast
-	err := json.Unmarshal(body, &ff)
+	err := json.Unmarshal(body.([]byte), &ff)
 	if err != nil {
-		log.Print(err)
-		return Weather{}, fmt.Errorf("cant parse JSON: %v", err)
+		log.Print("json:", err)
+		return Weather{}, &ErrorJSONResponse{}
 	}
 	if len(ff.List) < 1 {
 		log.Printf("%v", ff)
-		return Weather{}, fmt.Errorf("weatherApi - Empty Response: len < 1")
+		return Weather{}, &ErrorNotFound{}
 	}
 	l, ok := ff.List[0]["main"].(map[string]interface{})
 	if !ok {
-		return Weather{}, fmt.Errorf("weatherApi - Empty Response")
+		return Weather{}, &ErrorNotFound{}
 	}
 	forecast := Weather{
 		CityName:    ff.List[0]["name"].(string),
@@ -77,15 +81,11 @@ func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, er
 		log.Printf("Error occured: %v", err)
 		return Weather{}, err
 	}
-	res, err := GetResponseFromWeatherApp(req)
+	client := http.DefaultClient
+	res, err := GetResponseFromWeatherApp(req, client)
 	if err != nil {
 		log.Printf("Error occured: %v", err)
 		return Weather{}, err
 	}
-	forecast, err := ParseJSONFromApi(res)
-	if err != nil {
-		log.Printf("Error occured: %v", err)
-		return Weather{}, err
-	}
-	return forecast, nil
+	return res, nil
 }
