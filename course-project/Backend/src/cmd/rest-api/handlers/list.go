@@ -20,5 +20,8 @@ func SelectAll(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) {
 		lib.ReturnInternalError(w, err)
 		return
 	}
+	if len(recs) < 1 {
+		recs = make([]records.Record, 0)
+	}
 	lib.ReturnJSON(w, recs)
 }

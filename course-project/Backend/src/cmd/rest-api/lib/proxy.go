@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -53,20 +52,24 @@ func GetResponseFromWeatherApp(req *http.Request, client HTTPClient) (Weather, e
 	return ParseJSONFromApi(body)
 }
 
-func ParseJSONFromApi(body interface{}) (Weather, error) {
+func ParseJSONFromApi(body []byte) (Weather, error) {
 	var ff Forecast
-	err := json.Unmarshal(body.([]byte), &ff)
+	if body == nil {
+		log.Print("empty response")
+		return Weather{}, ErrorEmptyResponse
+	}
+	err := json.Unmarshal(body, &ff)
 	if err != nil {
 		log.Print("json:", err)
-		return Weather{}, &ErrorJSONResponse{}
+		return Weather{}, ErrorJSONResponse
 	}
 	if len(ff.List) < 1 {
 		log.Printf("%v", ff)
-		return Weather{}, &ErrorNotFound{}
+		return Weather{}, ErrorNotFound
 	}
 	l, ok := ff.List[0]["main"].(map[string]interface{})
 	if !ok {
-		return Weather{}, &ErrorNotFound{}
+		return Weather{}, ErrorNotFound
 	}
 	forecast := Weather{
 		CityName:    ff.List[0]["name"].(string),
@@ -75,7 +78,7 @@ func ParseJSONFromApi(body interface{}) (Weather, error) {
 	return forecast, nil
 }
 
-func GetCurrentWeatherFromAPI(ctx context.Context, cityName string) (Weather, error) {
+func GetCurrentWeatherFromAPI(cityName string) (Weather, error) {
 	req, err := NewRequest(cityName)
 	if err != nil {
 		log.Printf("Error occured: %v", err)

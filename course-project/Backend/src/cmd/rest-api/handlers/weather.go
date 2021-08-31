@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"time"
 
@@ -30,9 +29,8 @@ func GetCurrentWeather(p *pgxpool.Pool, w http.ResponseWriter, r *http.Request) 
 		lib.ReturnInternalError(w, err)
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	weather, err := lib.GetCurrentWeatherFromAPI(ctx, cityName)
+
+	weather, err := lib.GetCurrentWeatherFromAPI(cityName)
 	if err != nil {
 		lib.ReturnInternalError(w, err)
 	}

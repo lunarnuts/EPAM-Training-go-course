@@ -2,14 +2,12 @@ package lib
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"testing"
-	"time"
 )
 
 type MockClient struct {
@@ -56,11 +54,9 @@ func TestGetCurrentWeatherFromAPI(t *testing.T) {
 			Temperature: 0.0,
 		}},
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := GetCurrentWeatherFromAPI(ctx, tt.args.cityName); !reflect.DeepEqual(got.CityName, tt.want.CityName) {
+			if got, _ := GetCurrentWeatherFromAPI(tt.args.cityName); !reflect.DeepEqual(got.CityName, tt.want.CityName) {
 				t.Errorf("GetCurrentWeatherFromAPI() = %v, want %v", got, tt.want)
 			}
 		})
@@ -86,15 +82,15 @@ func TestParseJSONFromApi(t *testing.T) {
 		name    string
 		args    args
 		want    Weather
-		wantErr bool
+		wantErr error
 	}{
-		{name: "Empty Response", args: args{body: b}, want: Weather{}, wantErr: true},
-		{name: "Correct Response", args: args{body: b1}, want: Weather{CityName: "test", Temperature: 17.0}, wantErr: false},
+		{name: "Empty Response", args: args{body: b}, want: Weather{}, wantErr: ErrorJSONResponse},
+		{name: "Correct Response", args: args{body: b1}, want: Weather{CityName: "test", Temperature: 17.0}, wantErr: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseJSONFromApi(tt.args.body)
-			if (err != nil) != tt.wantErr {
+			if (err != nil) && !errors.Is(err, tt.wantErr) {
 				t.Errorf("ParseJSONFromApi() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -143,14 +139,14 @@ func TestGetResponseFromWeatherApp(t *testing.T) {
 				Body:       ioutil.NopCloser(bytes.NewBuffer(b)),
 			}
 			return &res, nil
-		}}}, want: Weather{}, wantErr: &ErrorNotFound{}},
+		}}}, want: Weather{}, wantErr: ErrorNotFound},
 		{name: "JSON error", args: args{req: request, client: MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
 			res := http.Response{
 				StatusCode: http.StatusAccepted,
 				Body:       ioutil.NopCloser(bytes.NewBuffer(nil)),
 			}
 			return &res, nil
-		}}}, want: Weather{}, wantErr: &ErrorJSONResponse{}},
+		}}}, want: Weather{}, wantErr: ErrorJSONResponse},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,25 +1,14 @@
 package lib
 
 import (
+	"errors"
 	"log"
 	"net/http"
 )
 
-type ErrorEmptyResponse struct{}
-type ErrorNotFound struct{}
-type ErrorJSONResponse struct{}
-
-func (e *ErrorEmptyResponse) Error() string {
-	return "weatherApi - Empty Response"
-}
-
-func (e *ErrorNotFound) Error() string {
-	return "weatherApi - Not found"
-}
-
-func (e *ErrorJSONResponse) Error() string {
-	return "weatherApi - JSON error"
-}
+var ErrorEmptyResponse error = errors.New("weatherAPI: response contains no data")
+var ErrorNotFound error = errors.New("weatherAPI: bad request or city not found")
+var ErrorJSONResponse error = errors.New("weatherAPI: response can not be unmarshalled to JSON")
 
 func ReturnInternalError(w http.ResponseWriter, errHappened error) {
 	log.Println(errHappened.Error())
