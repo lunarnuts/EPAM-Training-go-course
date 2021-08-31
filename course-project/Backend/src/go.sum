@@ -340,7 +340,6 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/wshaman/course-db v0.0.0-20210802143441-1acc9a06805c h1:useIKAdua8lZK0hmvssFENjNNsbK0Wqegb/eqrhIQJs=
 github.com/wshaman/course-db v0.0.0-20210802143441-1acc9a06805c/go.mod h1:CTwSpXU/dJFozfH779z0WJaH+LhJHhgeiDbS9YyA14U=
-github.com/wshaman/migrate v0.0.0-20200227091536-11326643484b h1:WeBWW06aWCXrED68mKXr5ge7IFBfv+qft8Mpc5/shsA=
 github.com/wshaman/migrate v0.0.0-20200227091536-11326643484b/go.mod h1:Dbj92qOty878gi31I+ljYBGl/4ZhG5GWv3uHIC8WgUs=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
