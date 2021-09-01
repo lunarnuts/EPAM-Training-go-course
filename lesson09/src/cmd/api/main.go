@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/lunarnuts/go-course/tree/lesson09/src/cmd/api/handlers"
+	"github.com/lunarnuts/go-course/tree/lesson09/src/cmd/migrate"
 	"github.com/lunarnuts/go-course/tree/lesson09/src/db"
 	utils "github.com/lunarnuts/go-course/tree/lesson09/src/env"
 )
@@ -30,7 +31,10 @@ func main() {
 		log.Fatalf("Unable to connect to database: %v", err)
 	}
 	defer pool.Close()
-
+	err = migrate.MigrateUp(dbsFromEnv())
+	if err != nil {
+		log.Print(err)
+	}
 	r.HandleFunc("/api/v1/contacts",
 		func(w http.ResponseWriter, r *http.Request) {
 			conn, _ := db.AcquireConn(pool)
