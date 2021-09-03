@@ -29,8 +29,8 @@ func ListContacts(db db.DBConn) ([]Contact, error) {
 
 func SelectContact(db db.DBConn, id uint64) (Contact, error) {
 	row := db.QueryRow(context.Background(),
-		`select p.id, p.name, p.phone, g.name from phonebook p
-		left join groups g on g.id=c.group_id where id =$1`, id)
+		`select p.id, p.name, p.phone, p.group_id, g.gname from phonebook p
+		left join groups g on g.group_id=p.group_id where p.id =$1`, id)
 	c := &Contact{}
 	var s *string
 	if err := row.Scan(&c.ID, &c.Name, &c.Phone, &c.GroupId, &s); err != nil {

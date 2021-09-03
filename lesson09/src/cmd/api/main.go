@@ -64,11 +64,11 @@ func main() {
 			conn, _ := db.AcquireConn(pool)
 			handlers.Delete(&conn, w, r)
 		}).Methods("DELETE")
-	r.Path("/api/v1/contacts/assigngroup").Queries("id", "{id}", "gid", "{gid}").HandlerFunc(
+	r.Path("/api/v1/contacts/assigngroup").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			conn, _ := db.AcquireConn(pool)
 			handlers.AssignContactToGroup(&conn, w, r)
-		}).Name("AssignContactsToGroup").Methods(http.MethodGet)
+		}).Name("AssignContactsToGroup").Methods(http.MethodPut)
 	log.Println("Starting API server on 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
