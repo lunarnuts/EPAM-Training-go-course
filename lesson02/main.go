@@ -8,7 +8,7 @@ import (
 
 func main() {
 	defer fmt.Println()
-	defer fibonacci.Printer(20)
+	defer fibonacci.Printer(-10)
 	fmt.Println("Fibonacci numbers is a form of sequence, such that")
 	fmt.Println("each number is the sum of two preceeding ones.")
 }

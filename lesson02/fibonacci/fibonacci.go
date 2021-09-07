@@ -2,6 +2,7 @@ package fibonacci
 
 import (
 	"fmt"
+	"log"
 )
 
 func Printer(n int) {
@@ -12,6 +13,13 @@ func Printer(n int) {
 }
 
 func recursive(n int) []int {
+	if n < 0 {
+		log.Fatal("number must be positive")
+		return []int{}
+	}
+	if n == 0 {
+		return []int{0}
+	}
 	mp := make([]int, n+1)
 	for j := range mp {
 		mp[j] = -1
