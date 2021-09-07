@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"sync"
 )
 
@@ -46,7 +45,7 @@ func Crawl(url string, depth int, fetcher Fetcher, wg *sync.WaitGroup) {
 	}
 	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	fmt.Printf("found: %s %q\n", url, body)
