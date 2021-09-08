@@ -16,7 +16,7 @@ func Printer(n int) {
 
 func recursive(n int) ([]int, error) {
 	if n < 0 {
-		return []int{}, fmt.Errorf("number must be positive")
+		return []int{}, fmt.Errorf("number must be non-negative")
 	}
 	if n == 0 {
 		return []int{0}, nil
