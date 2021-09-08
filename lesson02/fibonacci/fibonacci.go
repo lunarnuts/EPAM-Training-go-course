@@ -2,23 +2,24 @@ package fibonacci
 
 import (
 	"fmt"
-	"log"
 )
 
 func Printer(n int) {
-	mp := recursive(n)
+	mp, err := recursive(n)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+	}
 	for _, val := range mp {
 		fmt.Printf("%d ", val)
 	}
 }
 
-func recursive(n int) []int {
+func recursive(n int) ([]int, error) {
 	if n < 0 {
-		log.Fatal("number must be positive")
-		return []int{}
+		return []int{}, fmt.Errorf("number must be positive")
 	}
 	if n == 0 {
-		return []int{0}
+		return []int{0}, nil
 	}
 	mp := make([]int, n+1)
 	for j := range mp {
@@ -26,7 +27,7 @@ func recursive(n int) []int {
 	}
 	mp[0], mp[1] = 0, 1
 	recurUtil(n, mp)
-	return mp
+	return mp, nil
 }
 
 func recurUtil(n int, mp []int) int {
