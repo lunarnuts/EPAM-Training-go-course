@@ -2,26 +2,24 @@ package fibonacci
 
 import (
 	"fmt"
-	"strings"
 )
 
 func Printer(n int) {
-	one := 0
-	two := 1
-	fmt.Print(one, " ", two, " ")
-	for n > 1 {
-		fib := one + two
-		one, two = two, fib
-		n--
-		fmt.Print(fib, " ")
+	mp, err := recursive(n)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
 	}
-	fmt.Println()
+	for _, val := range mp {
+		fmt.Printf("%d ", val)
+	}
 }
 
-func Recursive(n int) {
+func recursive(n int) ([]int, error) {
 	if n < 0 {
-		fmt.Println("Number must be positive")
-		return
+		return []int{}, fmt.Errorf("number must be non-negative")
+	}
+	if n == 0 {
+		return []int{0}, nil
 	}
 	mp := make([]int, n+1)
 	for j := range mp {
@@ -29,12 +27,9 @@ func Recursive(n int) {
 	}
 	mp[0], mp[1] = 0, 1
 	recurUtil(n, mp)
-	var b strings.Builder
-	for _, i := range mp {
-		fmt.Fprintf(&b, "%d ", i)
-	}
-	fmt.Println(b.String())
+	return mp, nil
 }
+
 func recurUtil(n int, mp []int) int {
 	if mp[n] != -1 {
 		return mp[n]
